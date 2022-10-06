@@ -84,3 +84,8 @@ jobs:
         if: "${{ steps.check-version.outputs.tag || (github.event_name == 'workflow_dispatch' && github.event.inputs.manual_release) }}"
         run: |
           echo 'hey I work!'
+
+      - name: Run only when success
+        if: ${{ steps.i-work.conclusion == 'success' }}
+        run: |
+          echo 'i only show up for success'
