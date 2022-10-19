@@ -21,6 +21,12 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Fork
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh repo fork --clone Kapeli/Dash-User-Contributions
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
