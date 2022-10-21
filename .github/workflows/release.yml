@@ -41,19 +41,21 @@ jobs:
           echo 'change\n' > file.txt
 
       - name: Setup git
-        uses: oleksiyrudenko/gha-git-credentials@v2.1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          global: true
-          name: Tester testy
-          email: tester@testit.com
-          actor: paw-lu
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Tester tesst"
 
       - name: Commit
         working-directory: ./Dash-User-Contributions
         run: |
           git add --all
           git commit --message="Change!"
+
+      - name: Rename remote
+        working-directory: ./Dash-User-Contributions
+        run: |
+          git remote remove origin
+          git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/paw-lu/Dash-User-Contributions
 
       - name: Push
         working-directory: ./Dash-User-Contributions
