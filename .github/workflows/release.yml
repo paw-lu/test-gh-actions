@@ -28,15 +28,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          gh repo fork --clone Kapeli/Dash-User-Contributions
+          gh repo fork --clone yichijin/adventofcode2015
 
       - name: Branch
-        working-directory: ./Dash-User-Contributions
+        working-directory: ./adventofcode2015
         run: |
           git switch --create=${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Make a change
-        working-directory: ./Dash-User-Contributions
+        working-directory: ./adventofcode2015
         run: |
           echo 'change\n' > file.txt
 
@@ -46,18 +46,33 @@ jobs:
           git config --global user.name "Tester tesst"
 
       - name: Commit
-        working-directory: ./Dash-User-Contributions
+        working-directory: ./adventofcode2015
         run: |
           git add --all
           git commit --message="Change!"
 
       - name: Rename remote
-        working-directory: ./Dash-User-Contributions
+        working-directory: ./adventofcode2015
         run: |
           git remote remove origin
-          git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/paw-lu/Dash-User-Contributions
+          git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/paw-lu/adventofcode2015
+          git remote remove upstream
+          git remote add upstream https://${{ secrets.GH_TOKEN }}@github.com/yichijin/adventofcode2015
 
       - name: Push
-        working-directory: ./Dash-User-Contributions
+        working-directory: ./adventofcode2015
         run: |
           git push --set-upstream origin ${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Pull request
+        working-directory: ./adventofcode2015
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >
+          gh
+          pr
+          create
+          --repo=yichijin/adventofcode2015
+          --base=main
+          --title='Hey again'
+          --body=Testing
