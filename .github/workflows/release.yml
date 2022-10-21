@@ -41,9 +41,13 @@ jobs:
           echo 'change\n' > file.txt
 
       - name: Setup git
-        run: |
-          git config --global user.email "test@example.com"
-          git config --global user.name "Tester test"
+        uses: oleksiyrudenko/gha-git-credentials@v2.1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          global: true
+          name: Tester testy
+          email: tester@testit.com
+          actor: paw-lu
 
       - name: Commit
         working-directory: ./Dash-User-Contributions
