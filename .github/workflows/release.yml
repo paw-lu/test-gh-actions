@@ -76,3 +76,4 @@ jobs:
           --base=main
           --title='Hey again'
           --body=Testing
+          --head=${{ github.run_id }}-${{ github.run_attempt }}
