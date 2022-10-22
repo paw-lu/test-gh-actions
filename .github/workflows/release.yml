@@ -56,8 +56,6 @@ jobs:
         run: |
           git remote remove origin
           git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/paw-lu/adventofcode2015
-          git remote remove upstream
-          git remote add upstream https://${{ secrets.GH_TOKEN }}@github.com/yichijin/adventofcode2015
 
       - name: Push
         working-directory: ./adventofcode2015
