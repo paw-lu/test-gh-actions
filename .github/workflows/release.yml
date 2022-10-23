@@ -2,12 +2,15 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+  pull_request:
   workflow_dispatch:
     inputs:
       manual_release:
         description: "Manually trigger doc build and release."
+        required: false
+        default: false
+      debug_enabled:
+        description: "Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
         required: false
         default: false
 
@@ -24,54 +27,11 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Fork
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Run always
         run: |
-          gh repo fork --clone yichijin/adventofcode2015
+          echo 'I should always run'
 
-      - name: Branch
-        working-directory: ./adventofcode2015
+      - name: Run on main
+        if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}
         run: |
-          git switch --create=${{ github.run_id }}-${{ github.run_attempt }}
-
-      - name: Make a change
-        working-directory: ./adventofcode2015
-        run: |
-          echo 'change\n' > file.txt
-
-      - name: Setup git
-        run: |
-          git config --global user.email "test@example.com"
-          git config --global user.name "Tester tesst"
-
-      - name: Commit
-        working-directory: ./adventofcode2015
-        run: |
-          git add --all
-          git commit --message="Change!"
-
-      - name: Rename remote
-        working-directory: ./adventofcode2015
-        run: |
-          git remote remove origin
-          git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/paw-lu/adventofcode2015
-
-      - name: Push
-        working-directory: ./adventofcode2015
-        run: |
-          git push --set-upstream origin ${{ github.run_id }}-${{ github.run_attempt }}
-
-      - name: Pull request
-        working-directory: ./adventofcode2015
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: >
-          gh
-          pr
-          create
-          --repo=yichijin/adventofcode2015
-          --base=main
-          --title='Hey again'
-          --body=Testing
-          --head=${{ github.actor }}:${{ github.run_id }}-${{ github.run_attempt }}
+          echo 'I should run only on main push'
