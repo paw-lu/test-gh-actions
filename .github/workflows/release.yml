@@ -32,6 +32,8 @@ jobs:
           echo 'I should always run'
 
       - name: Run on main
-        if: ${{ github.event_name == 'push' && github.ref_name == 'main'}}
+        if: ${{
+          github.event_name == 'push'
+          && github.ref_name == 'main' }}
         run: |
           echo 'I should run only on main push'
