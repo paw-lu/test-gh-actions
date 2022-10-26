@@ -1,4 +1,4 @@
-name: Release
+name: Build docs
 
 on:
   push:
@@ -16,10 +16,11 @@ on:
 
 jobs:
   release:
-    name: Release
+    name: Build docs
     runs-on: ubuntu-latest
 
-    permissions: write-all
+    env:
+      FORCE_COLOR: "1"
 
     steps:
       - name: Check out the repository
@@ -27,13 +28,41 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Run always
-        run: |
-          echo 'I should always run'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-      - name: Run on main
-        if: ${{
-          github.event_name == 'push'
-          && github.ref_name == 'main' }}
+      - name: Upgrade pip
         run: |
-          echo 'I should run only on main push'
+          python -m pip install --constraint=.github/workflows/constraints.txt pip
+          python -m pip --version
+
+      - name: Setup Nox
+        id: setup-nox
+        uses: wntrblm/nox@2022.8.7
+        with:
+          python-versions: "3.10"
+
+      - name: Run Nox
+        run: |
+          nox --sessions clone
+
+      - name: pipx install httpie
+        run: |
+          pipx install httpie
+
+      - name: Run httpie
+        run: >
+          http
+          https://api.github.com/repos/mwaskom/seaborn/releases/latest
+          Accept:application/vnd.github+json
+
+      - name: GH cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh
+          api
+          --header='Accept: application/vnd.github+json'
+          /repos/mwaskom/seaborn/releases/latest
